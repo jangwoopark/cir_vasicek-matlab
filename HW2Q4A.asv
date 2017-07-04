@@ -1,0 +1,31 @@
+%HW2 4A
+
+K = 0.5;
+theta = 0.02;
+sigc = 0.15;
+sigv = 0.02;
+lambda0 = 0.02;
+R = 0.4;
+r = 0.04;
+count = 1;
+
+for T=1:10
+    
+    
+    CIR_p1 = exp(-T*r)*CIRExplicit( K, theta, sigc, lambda0, T);
+    VAS_p1 = exp(-T*r)*VasicekExplicit( K, theta, sigv, lambda0, T);
+    CIR_p2 = 0; VAS_p2 = 0;
+    
+    dt = 1/1000;
+    tgrid = 0:dt:T;
+    for i=tgrid
+        CIR_p2 = CIR_p2 + exp(-r*i)*CIRExplicit(K,theta,sigc,lambda0,i)*dt;
+        VAS_p2 = VAS_p2 + exp(-r*i)*VasicekExplicit(K,theta,sigv,lambda0,i)*dt;
+    end
+    CIR_price(count) = CIR_p1 + R*r*CIR_p2;
+    VAS_price(count) = VAS_p1 + R*r*VAS_p2;
+    price_zero(count) = 1/(1+r)^T;
+    CIR_spread(count) = -(1/T)*log(CIR_price(count)/price_zero(count));
+    VAS_spread(count) = -(1/T)*log(VAS_price(count)/price_zero(count));
+    count = count + 1;
+end
